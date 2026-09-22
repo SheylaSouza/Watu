@@ -1,0 +1,47 @@
+{
+  "name": "watu",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Senior QA technical exercise with Playwright, MySQL, Flyway, Prisma and WireMock.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "quality": "npm run lint && npm run typecheck && npm run format:check",
+    "docker:up": "docker compose up -d --wait",
+    "docker:down": "docker compose down",
+    "prisma:pull": "prisma db pull",
+    "prisma:generate": "prisma generate",
+    "data:users": "tsx scripts/generate-users.ts",
+    "data:roles": "tsx scripts/apply-role-seed.ts",
+    "db:prepare": "npm run prisma:pull && npm run prisma:generate && npm run data:users && npm run data:roles",
+    "test:ui": "cross-env PLAYWRIGHT_HTML_OUTPUT_DIR=reports/ui playwright test --project=desktop-chromium --project=desktop-firefox --project=mobile-iphone",
+    "test:db": "cross-env PLAYWRIGHT_HTML_OUTPUT_DIR=reports/db playwright test --project=db",
+    "test:api": "cross-env PLAYWRIGHT_HTML_OUTPUT_DIR=reports/api playwright test --project=api",
+    "test:e2e": "tsx scripts/run-e2e.ts"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^10.0.0",
+    "@prisma/client": "6.12.0",
+    "dotenv": "^17.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^24.0.0",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.0.0",
+    "husky": "^9.0.0",
+    "prettier": "^3.0.0",
+    "prisma": "6.12.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}

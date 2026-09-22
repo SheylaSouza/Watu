@@ -1,0 +1,43 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/v1/reservations",
+    "headers": {
+      "X-Client-Id": {
+        "equalTo": "qa-senior-client"
+      },
+      "Content-Type": {
+        "contains": "application/json"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": {
+          "expression": "$.bookId",
+          "equalTo": "9781449325862"
+        }
+      },
+      {
+        "matchesJsonPath": {
+          "expression": "$.userId",
+          "matches": "[1-9][0-9]*"
+        }
+      },
+      {
+        "matchesJsonPath": {
+          "expression": "$.pickupLocation",
+          "equalTo": "Nairobi-CBD"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json",
+      "Location": "/api/v1/reservations/res-20260918-001"
+    },
+    "bodyFileName": "reservation-created.json"
+  }
+}

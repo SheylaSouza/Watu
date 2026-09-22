@@ -1,0 +1,5 @@
+{
+  "code": "missing_client_id",
+  "message": "The X-Client-Id header is required.",
+  "traceId": "wiremock-auth-001"
+}

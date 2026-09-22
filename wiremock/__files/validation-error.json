@@ -1,0 +1,14 @@
+{
+  "code": "validation_error",
+  "message": "The reservation request is invalid.",
+  "errors": [
+    {
+      "field": "userId",
+      "message": "userId is required and must be a positive integer."
+    },
+    {
+      "field": "pickupLocation",
+      "message": "pickupLocation must be Nairobi-CBD."
+    }
+  ]
+}

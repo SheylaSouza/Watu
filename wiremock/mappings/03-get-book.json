@@ -1,0 +1,20 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v1/books/9781449325862",
+    "headers": {
+      "X-Client-Id": {
+        "equalTo": "qa-senior-client"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Contract-Version": "1.0"
+    },
+    "bodyFileName": "book-details.json"
+  }
+}

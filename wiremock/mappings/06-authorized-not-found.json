@@ -1,0 +1,18 @@
+{
+  "priority": 5,
+  "request": {
+    "urlPathPattern": "/api/v1/.*",
+    "headers": {
+      "X-Client-Id": {
+        "equalTo": "qa-senior-client"
+      }
+    }
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "not-found.json"
+  }
+}

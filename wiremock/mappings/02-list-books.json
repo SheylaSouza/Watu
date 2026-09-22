@@ -1,0 +1,28 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v1/books",
+    "headers": {
+      "X-Client-Id": {
+        "equalTo": "qa-senior-client"
+      }
+    },
+    "queryParameters": {
+      "limit": {
+        "matches": "([1-9]|10)"
+      },
+      "available": {
+        "equalTo": "true"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Contract-Version": "1.0"
+    },
+    "bodyFileName": "books-list.json"
+  }
+}

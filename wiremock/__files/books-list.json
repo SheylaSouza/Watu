@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "isbn": "9781449325862",
+      "title": "Git Pocket Guide",
+      "author": "Richard E. Silverman",
+      "available": true
+    },
+    {
+      "isbn": "9781449331818",
+      "title": "Learning JavaScript Design Patterns",
+      "author": "Addy Osmani",
+      "available": true
+    }
+  ],
+  "page": {
+    "limit": 2,
+    "returned": 2
+  }
+}

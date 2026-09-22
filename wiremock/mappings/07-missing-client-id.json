@@ -1,0 +1,14 @@
+{
+  "priority": 10,
+  "request": {
+    "urlPathPattern": "/api/v1/.*"
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json",
+      "WWW-Authenticate": "ClientId"
+    },
+    "bodyFileName": "unauthorized.json"
+  }
+}

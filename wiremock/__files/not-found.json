@@ -1,0 +1,5 @@
+{
+  "code": "resource_not_found",
+  "message": "The requested API resource was not found.",
+  "traceId": "wiremock-not-found-001"
+}

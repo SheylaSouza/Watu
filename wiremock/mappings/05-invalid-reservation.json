@@ -1,0 +1,19 @@
+{
+  "priority": 3,
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/v1/reservations",
+    "headers": {
+      "X-Client-Id": {
+        "equalTo": "qa-senior-client"
+      }
+    }
+  },
+  "response": {
+    "status": 422,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "validation-error.json"
+  }
+}
