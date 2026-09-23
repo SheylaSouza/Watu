@@ -1,7 +1,7 @@
 node_modules/
+.features-gen/
 reports/
 test-results/
 playwright-report/
 prisma/generated/
 package-lock.json
-

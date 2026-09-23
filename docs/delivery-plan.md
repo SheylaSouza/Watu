@@ -22,13 +22,14 @@ Exit criterion: a clean checkout passes with `docker compose up -d --wait` follo
 - [ ] Add a boundary matrix for `USER_COUNT`, `MAX_USER_COUNT` and `USER_ID_START`.
 - [x] Assert the required role catalog and differing combinations without treating the seed's ID
       formula as a business rule.
+- [x] Express UI and API behavior as executable Gherkin with TypeScript step definitions.
 - [ ] Decide whether persistent local data or per-run isolated databases better fit the review.
 
 Exit criterion: repeated local and CI runs have no unexplained flakes.
 
 ## Phase 3 - Reporting and observability
 
-- [ ] Decide between merged Playwright blob reports and the current separate HTML reports.
+- [x] Preserve separate HTML reports and merge their Playwright blobs into `reports/all`.
 - [ ] Add a concise generated summary with counts by suite and browser.
 - [ ] Attach Docker and Flyway diagnostics only when a test phase fails.
 - [ ] Confirm artifacts do not contain credentials or sensitive headers.
