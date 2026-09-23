@@ -31,7 +31,7 @@ Exit criterion: repeated local and CI runs have no unexplained flakes.
 
 - [x] Preserve separate HTML reports and merge their Playwright blobs into `reports/all`.
 - [ ] Add a concise generated summary with counts by suite and browser.
-- [ ] Attach Docker and Flyway diagnostics only when a test phase fails.
+- [x] Attach Docker and Flyway diagnostics only when a test phase fails.
 - [ ] Confirm artifacts do not contain credentials or sensitive headers.
 
 Exit criterion: a reviewer can understand a failure from the uploaded artifact without rerunning it.

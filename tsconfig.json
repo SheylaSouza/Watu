@@ -10,5 +10,12 @@
     "skipLibCheck": true,
     "types": ["node", "@playwright/test"]
   },
-  "include": ["data/**/*.ts", "pages/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts", "*.ts"]
+  "include": [
+    "data/**/*.ts",
+    "elements/**/*.ts",
+    "pages/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "*.ts"
+  ]
 }

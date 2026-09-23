@@ -21,7 +21,7 @@ const reporters: ReporterDescription[] = [
   [
     'html',
     {
-      outputFolder: process.env.PLAYWRIGHT_HTML_OUTPUT_DIR ?? 'reports/all',
+      outputFolder: process.env.PLAYWRIGHT_HTML_OUTPUT_DIR ?? 'reports/manual',
       open: 'never',
     },
   ],

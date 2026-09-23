@@ -64,12 +64,14 @@ reports/all/
 reports/ui/
 reports/db/
 reports/api/
+reports/manual/
 ```
 
 The internal `reports/blobs/` files carry complete Playwright events and attachments between the
 individual executions and the final merge. `npm run test:e2e` removes stale generated reports before
 the run and rebuilds `reports/all` at the end. If a phase fails, it still attempts to merge the phases
-that produced blob evidence before returning the original failure.
+that produced blob evidence before returning the original failure. Direct `playwright test` commands
+write to `reports/manual`, so an exploratory or headed run cannot overwrite the combined report.
 
 Run an individual phase when developing:
 
