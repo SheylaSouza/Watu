@@ -107,12 +107,13 @@ docker compose up -d --wait
 
 ## Architecture decisions
 
-The project separates test data, UI interaction and assertions into `data/`, `pages/` and `tests/`.
-Page Objects expose stable user interactions but contain no assertions. UI and API behavior is
-specified in executable Gherkin `.feature` files and implemented by TypeScript step definitions
-through `playwright-bdd`; database verification stays as a direct Playwright test because it is a
-technical evidence query rather than a user behavior. Generated Playwright specs live only in the
-ignored `.features-gen/` directory.
+The project separates test data, UI selectors, page interactions and assertions into `data/`,
+`elements/`, `pages/` and `tests/`. Element classes contain only Playwright locators and dynamic
+element lookup; Page Objects use those elements to expose stable user interactions and contain no
+assertions. UI and API behavior is specified in executable Gherkin `.feature` files and implemented
+by TypeScript step definitions through `playwright-bdd`; database verification stays as a direct
+Playwright test because it is a technical evidence query rather than a user behavior. Generated
+Playwright specs live only in the ignored `.features-gen/` directory.
 
 Flyway is the only owner of database structure. Prisma reads `DATABASE_URL` from the environment,
 while the SQL migration corrects the invalid foreign-key references, duplicate constraint name,

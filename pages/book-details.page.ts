@@ -1,21 +1,18 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+
+import { BookDetailsElements } from '../elements/book-details.elements';
 
 export class BookDetailsPage {
-  readonly title: Locator;
-  readonly backToStoreButton: Locator;
+  readonly elements: BookDetailsElements;
 
   constructor(private readonly page: Page) {
-    this.title = page.locator('#title-wrapper').locator('#userName-value');
-    this.backToStoreButton = page.getByRole('button', {
-      name: 'Back To Book Store',
-      exact: true,
-    });
+    this.elements = new BookDetailsElements(page);
   }
 
   async backToStore(): Promise<void> {
     await Promise.all([
       this.page.waitForURL((url: URL) => url.pathname === '/books' && url.search.length === 0),
-      this.backToStoreButton.click(),
+      this.elements.backToStoreButton.click(),
     ]);
   }
 }
