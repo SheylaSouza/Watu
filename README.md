@@ -5,13 +5,14 @@ Flyway, Prisma and WireMock.
 
 ## What is covered
 
-- DemoQA Book Store visual evidence on Chromium, Firefox and an emulated iPhone.
+- Executable BDD scenarios for the DemoQA Book Store on Chromium, Firefox and an emulated iPhone.
 - Configurable user generation with a safe maximum and configurable starting ID.
 - Database schema managed only by Flyway and introspected by Prisma.
 - Idempotent DML seed for `Superuser`, `Editor` and `ReadOnly` role combinations.
 - Explicit SQL `JOIN` through Prisma with JSON evidence attached to the report.
-- WireMock contract tests for health, listing, detail, creation, validation, authentication and
-  missing resources.
+- Executable BDD contract scenarios for WireMock health, listing, detail, creation, validation,
+  authentication and missing resources.
+- Individual Playwright HTML reports plus one combined UI, database and API report with attachments.
 - ESLint, TypeScript, Prettier, Husky and GitHub Actions.
 
 ## Prerequisites
@@ -55,13 +56,22 @@ Prepare data and run UI, database and API suites sequentially:
 npm run test:e2e
 ```
 
-Reports are written separately to avoid one sequential phase overwriting another:
+Each phase has a clearly separated report, and `reports/all` combines all executed phases and their
+attachments:
 
 ```text
+reports/all/
 reports/ui/
 reports/db/
 reports/api/
+reports/manual/
 ```
+
+The internal `reports/blobs/` files carry complete Playwright events and attachments between the
+individual executions and the final merge. `npm run test:e2e` removes stale generated reports before
+the run and rebuilds `reports/all` at the end. If a phase fails, it still attempts to merge the phases
+that produced blob evidence before returning the original failure. Direct `playwright test` commands
+write to `reports/manual`, so an exploratory or headed run cannot overwrite the combined report.
 
 Run an individual phase when developing:
 
@@ -69,6 +79,12 @@ Run an individual phase when developing:
 npm run test:ui
 npm run test:db
 npm run test:api
+```
+
+After individual phases, merge the currently available blob reports when needed:
+
+```bash
+npm run reports:merge
 ```
 
 Run all static checks:
@@ -93,10 +109,13 @@ docker compose up -d --wait
 
 ## Architecture decisions
 
-The project separates test data, UI interaction and assertions into `data/`, `pages/` and
-`tests/`. Page Objects expose stable user interactions but contain no assertions. Test files are
-further separated into UI, database and API suites so that the required sequential command remains
-clear while every suite continues to use the same Playwright reporter and attachment mechanism.
+The project separates test data, UI selectors, page interactions and assertions into `data/`,
+`elements/`, `pages/` and `tests/`. Element classes contain only Playwright locators and dynamic
+element lookup; Page Objects use those elements to expose stable user interactions and contain no
+assertions. UI and API behavior is specified in executable Gherkin `.feature` files and implemented
+by TypeScript step definitions through `playwright-bdd`; database verification stays as a direct
+Playwright test because it is a technical evidence query rather than a user behavior. Generated
+Playwright specs live only in the ignored `.features-gen/` directory.
 
 Flyway is the only owner of database structure. Prisma reads `DATABASE_URL` from the environment,
 while the SQL migration corrects the invalid foreign-key references, duplicate constraint name,
@@ -109,8 +128,16 @@ assignments use `INSERT ... SELECT` so they work with any configured user range.
 Docker Compose expresses the required startup order with a MySQL healthcheck, Flyway's successful
 one-shot completion and WireMock startup. The WireMock API is intentionally richer than a single
 happy path: mappings have priorities and test request headers, query parameters, JSON bodies,
-success responses and structured errors. `scripts/run-e2e.ts` executes the phases sequentially and
-stops immediately when a phase fails.
+success responses and structured errors. `scripts/run-e2e.ts` executes the phases sequentially,
+stops later phases after a failure, and still builds a combined report from the evidence already
+produced. In CI, the static quality gate validates BDD generation before linting, type checking and
+formatting, all before Playwright browser installation and Docker startup.
+
+Each phase writes an individual HTML report and a uniquely named blob report. Playwright's
+`merge-reports` command converts the UI, database and API blobs into `reports/all/index.html`.
+Project names begin with `UI`, `DATABASE` or `API`, making the suite boundary explicit in the merged
+view. Screenshots, failure traces, videos and JSON attachments remain connected to their originating
+scenario.
 
 ## Corrected SQL assumptions
 
@@ -131,15 +158,18 @@ The generator uses deterministic Faker data and Prisma `upsert`, making repeated
 the configured ID range. It does not remove records outside that range. If the count is reduced and
 an exact clean dataset is needed, reset the disposable Compose volume as described above.
 
-Role assignment is deterministic:
+Role assignment uses the following deterministic data-generation strategy:
 
 - Every active user receives `ReadOnly`.
 - Every active user with an even ID also receives `Editor`.
 - The first active user and every tenth ID also receive `Superuser`.
 
-The database test performs an explicit `INNER JOIN`, verifies every expected configurable ID and
-attaches the complete result as `users-with-roles.json`. `BIGINT` values are converted to strings
-only while serializing the report evidence.
+These rules exist only to produce reproducible role combinations; they are not treated as business
+requirements. The database test therefore does not assert that a particular ID must receive a
+particular role. It verifies the required role catalog, confirms that the generated users have more
+than one combination when multiple users are requested, performs an explicit `INNER JOIN`, verifies
+every expected configurable ID and attaches the complete result as `users-with-roles.json`. `BIGINT`
+values are converted to strings only while serializing the report evidence.
 
 ## WireMock contract
 
@@ -162,14 +192,16 @@ response-validation techniques.
 ## Known limitations
 
 - DemoQA is an external website and can change or be unavailable independently of this repository.
-- The visual test captures and attaches a stable table screenshot and validates key visual elements;
-  golden-image regression can be added after baselines are generated in the same Linux environment
-  used by CI.
+- The visual test uses key-element comparison and attaches a stable table screenshot as evidence. It
+  is deliberately not described as pixel-based golden-image regression, which would require
+  baselines generated and maintained in the same Linux environment used by CI.
 - Nairobi geolocation is configured for all browser projects, although the Book Store page does not
   currently expose location-dependent behavior.
 - MySQL test data is persistent between local runs by design. Resetting the disposable volume is an
   explicit operation.
 - The WireMock service is a test double, not an implementation of a production book service.
+- The high-level Gherkin scenarios intentionally describe behavior rather than HTTP status numbers;
+  exact status, header and JSON contract assertions remain in the TypeScript step definitions.
 
 ## Delivery plan
 

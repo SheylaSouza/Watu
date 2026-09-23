@@ -1,4 +1,5 @@
 node_modules/
+.features-gen/
 .env
 playwright-report/
 test-results/
@@ -6,4 +7,3 @@ reports/
 blob-report/
 prisma/generated/
 .DS_Store
-

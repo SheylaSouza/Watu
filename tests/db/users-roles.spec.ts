@@ -14,6 +14,8 @@ interface UserRoleRow {
   role: string;
 }
 
+const requiredRoleNames = ['Editor', 'ReadOnly', 'Superuser'] as const;
+
 const prisma = new PrismaClient();
 
 test.afterAll(async () => {
@@ -23,6 +25,22 @@ test.afterAll(async () => {
 test('retrieves every generated user with roles through an explicit JOIN', async ({}, testInfo) => {
   const config = getUserGenerationConfig();
   const expectedIds = getExpectedUserIds(config);
+  const expectedIdStrings = new Set(expectedIds.map((id: bigint) => id.toString()));
+
+  const roleCatalog = await prisma.role.findMany({
+    where: {
+      name: {
+        in: [...requiredRoleNames],
+      },
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  expect(roleCatalog.map((role: { name: string }) => role.name).sort()).toEqual(
+    [...requiredRoleNames].sort(),
+  );
 
   const rows = await prisma.$queryRaw<UserRoleRow[]>`
     SELECT
@@ -39,20 +57,41 @@ test('retrieves every generated user with roles through an explicit JOIN', async
     ORDER BY u.id, r.id
   `;
 
-  const returnedIds = new Set(rows.map((row: UserRoleRow) => row.id.toString()));
+  const generatedRows = rows.filter((row: UserRoleRow) => expectedIdStrings.has(row.id.toString()));
+  const returnedIds = new Set(generatedRows.map((row: UserRoleRow) => row.id.toString()));
   for (const expectedId of expectedIds) {
     expect(returnedIds, `Expected user ${expectedId.toString()} in JOIN evidence`).toContain(
       expectedId.toString(),
     );
   }
 
-  expect(rows.length).toBeGreaterThanOrEqual(config.count);
-  expect(rows.every((row: UserRoleRow) => row.role.length > 0)).toBe(true);
+  expect(generatedRows.length).toBeGreaterThanOrEqual(config.count);
+  expect(generatedRows.every((row: UserRoleRow) => row.role.length > 0)).toBe(true);
+
+  const rolesByUser = new Map<string, string[]>();
+  for (const row of generatedRows) {
+    const userId = row.id.toString();
+    const assignedRoles = rolesByUser.get(userId) ?? [];
+    assignedRoles.push(row.role);
+    rolesByUser.set(userId, assignedRoles);
+  }
+
+  const roleCombinations = new Set(
+    [...rolesByUser.values()].map((roles: string[]) => [...roles].sort().join('|')),
+  );
+  if (config.count > 1) {
+    expect(
+      roleCombinations.size,
+      'Expected the generated users to have more than one role combination',
+    ).toBeGreaterThan(1);
+  }
 
   const evidence = JSON.stringify(
     {
       configuration: config,
       distinctUsers: returnedIds.size,
+      requiredRoleCatalog: roleCatalog.map((role: { name: string }) => role.name).sort(),
+      roleCombinations: [...roleCombinations].sort(),
       rows,
     },
     (_, value: unknown) => (typeof value === 'bigint' ? value.toString() : value),
