@@ -25,14 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run static quality gates
+        run: npm run quality
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox
 
       - name: Start MySQL, Flyway and WireMock
         run: docker compose up -d --wait
-
-      - name: Run static quality gates
-        run: npm run quality
 
       - name: Run UI, database and API suites sequentially
         run: npm run test:e2e

@@ -9,17 +9,19 @@
 - [x] Add MySQL, Flyway and WireMock Compose services with ordered startup.
 - [x] Add UI, database and expanded API tests.
 - [x] Add sequential orchestration, separate reports, linting, formatting, Husky and CI.
-- [ ] Execute the complete stack on a machine with Docker and record the first green run.
+- [x] Execute the complete stack with Docker and record the first green GitHub Actions run.
 
 Exit criterion: a clean checkout passes with `docker compose up -d --wait` followed by
 `npm run test:e2e`.
 
 ## Phase 2 - Test robustness
 
-- [ ] Generate Linux visual baselines and evaluate screenshot thresholds.
+- [x] Evaluate golden-image baselines and document why stable-element assertions plus screenshot
+      evidence are used for the external DemoQA page.
 - [ ] Add WireMock request-journal verification for important calls.
 - [ ] Add a boundary matrix for `USER_COUNT`, `MAX_USER_COUNT` and `USER_ID_START`.
-- [ ] Add database assertions for exact role combinations, not only role presence.
+- [x] Assert the required role catalog and differing combinations without treating the seed's ID
+      formula as a business rule.
 - [ ] Decide whether persistent local data or per-run isolated databases better fit the review.
 
 Exit criterion: repeated local and CI runs have no unexplained flakes.
